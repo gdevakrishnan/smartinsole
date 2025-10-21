@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:3000/api/patients";
+const BASE_URL = "https://smartinsole.onrender.com/api/patients";
 
 // ✅ Get all patients
 export const getAllPatients = async () => {
