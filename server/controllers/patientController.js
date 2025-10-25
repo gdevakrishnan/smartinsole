@@ -83,10 +83,31 @@ const updatePatientById = async (req, res) => {
   }
 };
 
+// ✅ Delete a patient by patient_id
+const deletePatientById = async (req, res) => {
+  try {
+    const { patient_id } = req.params;
+    
+    const deletedPatient = await Patient.findOneAndDelete({ patient_id });
+    
+    if (!deletedPatient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+    
+    res.status(200).json({ 
+      message: 'Patient deleted successfully', 
+      patient: deletedPatient 
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting patient', error });
+  }
+};
+
 module.exports = {
   getAllPatients,
   getPatientById,
   createPatient,
   getAllPatientIds,
-  updatePatientById
+  updatePatientById,
+  deletePatientById
 };

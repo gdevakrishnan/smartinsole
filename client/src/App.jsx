@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AlertCircle, Activity, Thermometer, TrendingUp, Users, Plus, Edit2, X, Check, RefreshCw } from 'lucide-react';
-import { createPatient, getAllPatients, updatePatientById } from './serviceWorkers/serviceWorker';
+import { createPatient, getAllPatients, updatePatientById, deletePatientById } from './serviceWorkers/serviceWorker';
 
 // Components
 const StatCard = ({ icon: Icon, title, value, color }) => (
@@ -34,7 +34,7 @@ const RiskBadge = ({ level }) => {
   );
 };
 
-const PatientCard = ({ patient, onEdit, onView }) => (
+const PatientCard = ({ patient, onEdit, onView, onDelete }) => (
   <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-200">
     <div className="flex justify-between items-start mb-4">
       <div>
@@ -43,7 +43,7 @@ const PatientCard = ({ patient, onEdit, onView }) => (
       </div>
       <RiskBadge level={patient.risk_level} />
     </div>
-    
+
     <div className="grid grid-cols-2 gap-4 mb-4">
       <div className="flex items-center space-x-2">
         <Activity className="w-5 h-5 text-blue-500" />
@@ -52,7 +52,7 @@ const PatientCard = ({ patient, onEdit, onView }) => (
           <p className="font-semibold text-gray-800">{patient.pressure_data} mmHg</p>
         </div>
       </div>
-      
+
       <div className="flex items-center space-x-2">
         <Thermometer className="w-5 h-5 text-red-500" />
         <div>
@@ -60,7 +60,7 @@ const PatientCard = ({ patient, onEdit, onView }) => (
           <p className="font-semibold text-gray-800">{patient.temperature}°F</p>
         </div>
       </div>
-      
+
       <div className="flex items-center space-x-2">
         <TrendingUp className="w-5 h-5 text-green-500" />
         <div>
@@ -69,7 +69,7 @@ const PatientCard = ({ patient, onEdit, onView }) => (
         </div>
       </div>
     </div>
-    
+
     <div className="flex space-x-2">
       <button
         onClick={() => onView(patient)}
@@ -83,13 +83,19 @@ const PatientCard = ({ patient, onEdit, onView }) => (
       >
         <Edit2 className="w-5 h-5" />
       </button>
+      <button
+        onClick={() => onDelete(patient)}
+        className="bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-lg transition-colors duration-200"
+      >
+        <X className="w-5 h-5" />
+      </button>
     </div>
   </div>
 );
 
 const Modal = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
-  
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -120,7 +126,7 @@ const PatientForm = ({ patient, onSubmit, onCancel, isEdit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
+
     if (!formData.patient_id || !formData.pressure_data || !formData.temperature || !formData.motion) {
       setError('All fields are required');
       return;
@@ -141,7 +147,7 @@ const PatientForm = ({ patient, onSubmit, onCancel, isEdit }) => {
           <span>{error}</span>
         </div>
       )}
-      
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Patient ID</label>
         <input
@@ -294,13 +300,13 @@ export default function App() {
     setLoading(true);
     const data = await getAllPatients();
     setPatients(data);
-    
+
     const total = data.length;
     const high = data.filter(p => p.risk_level >= 3).length;
     const medium = data.filter(p => p.risk_level === 2).length;
     const low = data.filter(p => p.risk_level <= 1).length;
     setStats({ total, high, medium, low });
-    
+
     setLoading(false);
   };
 
@@ -329,6 +335,13 @@ export default function App() {
   const handleView = (patient) => {
     setSelectedPatient(patient);
     setModalType('view');
+  };
+
+  const handleDelete = async (patient) => {
+    if (window.confirm(`Are you sure you want to delete patient ${patient.patient_id}?`)) {
+      await deletePatientById(patient.patient_id);
+      await loadPatients();
+    }
   };
 
   return (
@@ -397,6 +410,7 @@ export default function App() {
                 patient={patient}
                 onEdit={handleEdit}
                 onView={handleView}
+                onDelete={handleDelete}
               />
             ))}
           </div>

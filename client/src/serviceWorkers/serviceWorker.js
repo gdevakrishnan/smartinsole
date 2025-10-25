@@ -90,3 +90,22 @@ export const updatePatientById = async (patientId, updateData) => {
     return { status: "failed", message: "Failed to update patient" };
   }
 };
+
+// ✅ Delete a patient by patient_id
+export const deletePatientById = async (patientId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/${patientId}`, {
+      method: "DELETE",
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to delete patient with ID: ${patientId}`);
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("DELETE patient error:", error);
+    return { status: "failed", message: "Failed to delete patient" };
+  }
+};

@@ -6,7 +6,8 @@ const {
   getPatientById,
   createPatient,
   getAllPatientIds,
-  updatePatientById
+  updatePatientById,
+  deletePatientById
 } = require('../controllers/patientController');
 
 // Routes
@@ -15,5 +16,6 @@ router.get('/ids', getAllPatientIds);          // Get all patient IDs
 router.get('/:patient_id', getPatientById);    // Get specific patient by ID
 router.post('/', createPatient);               // Create new patient
 router.put('/:patient_id', updatePatientById); // Update patient by ID
+router.delete('/:patient_id', deletePatientById);
 
 module.exports = router;
