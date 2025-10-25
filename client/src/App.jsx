@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertCircle, Activity, Thermometer, TrendingUp, Users, Plus, Edit2, X, Check, RefreshCw } from 'lucide-react';
+import { AlertCircle, Activity, Thermometer, TrendingUp, Users, Plus, Edit2, X, Check, RefreshCw, Trash } from 'lucide-react';
 import { createPatient, getAllPatients, updatePatientById, deletePatientById } from './serviceWorkers/serviceWorker';
 
 // Components
@@ -87,7 +87,7 @@ const PatientCard = ({ patient, onEdit, onView, onDelete }) => (
         onClick={() => onDelete(patient)}
         className="bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-lg transition-colors duration-200"
       >
-        <X className="w-5 h-5" />
+        <Trash className="w-5 h-5" />
       </button>
     </div>
   </div>
